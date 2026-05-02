@@ -2,7 +2,7 @@
 title: 'Fight Club Review'
 description: 'A mind-blowing masterpiece that you cannot talk about'
 pubDate: 'May 02 2025'
-heroImage: '../../assets/blog-placeholder-1.jpg'
+heroImage: '../../assets/blog-placeholder-5.jpg'
 ---
 
 ## Rating: 9/10 ⭐
