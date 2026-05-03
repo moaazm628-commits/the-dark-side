@@ -2,9 +2,6 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { supabase } from '../supabase';
-
-const { data: reviews } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
 ---
 
 <!doctype html>
@@ -17,21 +14,41 @@ const { data: reviews } = await supabase.from('reviews').select('*').order('crea
     <main>
       <h1>🌍 Community Reviews</h1>
       <p>Reviews submitted by our readers!</p>
-
-      {reviews && reviews.length === 0 && <p>No reviews yet. Be the first!</p>}
-
-      {reviews && reviews.map((review) => (
-        <div class="review-card">
-          <h2>{review.title}</h2>
-          <p class="meta">
-            {review.category === 'movie' ? '🎥' : review.category === 'show' ? '📺' : '⚽'}
-            {review.category} · ⭐ {review.rating}/10 · by {review.author}
-          </p>
-          <p>{review.content}</p>
-        </div>
-      ))}
+      <div id="reviews-container">Loading reviews...</div>
     </main>
     <Footer />
+
+    <script>
+      import { supabase } from '../supabase';
+
+      async function loadReviews() {
+        const { data: reviews, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        const container = document.getElementById('reviews-container');
+
+        if (error || !reviews || reviews.length === 0) {
+          container.innerHTML = '<p>No reviews yet. Be the first!</p>';
+          return;
+        }
+
+        container.innerHTML = reviews.map(review => `
+          <div class="review-card">
+            <h2>${review.title}</h2>
+            <p class="meta">
+              ${review.category === 'movie' ? '🎥' : review.category === 'show' ? '📺' : '⚽'}
+              ${review.category} · ⭐ ${review.rating}/10 · by ${review.author}
+              · ${new Date(review.created_at).toLocaleDateString()}
+            </p>
+            <p>${review.content}</p>
+          </div>
+        `).join('');
+      }
+
+      loadReviews();
+    </script>
   </body>
 </html>
 
