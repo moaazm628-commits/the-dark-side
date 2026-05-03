@@ -46,29 +46,34 @@ import Footer from '../components/Footer.astro';
     </main>
     <Footer />
 
-    <script>
-      import { supabase } from '../supabase';
+   <script>
+  import { supabase } from '../supabase';
 
-      document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+  // Check if user is logged in
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    window.location.href = '/login';
+  }
 
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-        const rating = parseInt(document.getElementById('rating').value);
-        const author = document.getElementById('author').value;
-        const category = document.getElementById('category').value;
+  document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        const { error } = await supabase.from('reviews').insert([
-          { title, content, rating, author, category }
-        ]);
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+    const rating = parseInt(document.getElementById('rating').value);
+    const author = document.getElementById('author').value;
+    const category = document.getElementById('category').value;
 
-        if (error) {
-          document.getElementById('message').textContent = '❌ Something went wrong. Try again!';
-        } else {
-          document.getElementById('message').textContent = '✅ Review submitted successfully!';
-          document.getElementById('reviewForm').reset();
-        }
-      });
-    </script>
-  </body>
-</html>
+    const { error } = await supabase.from('reviews').insert([
+      { title, content, rating, author, category }
+    ]);
+
+    if (error) {
+      document.getElementById('message').textContent = '❌ Something went wrong. Try again!';
+    } else {
+      document.getElementById('message').textContent = '✅ Review submitted successfully!';
+      document.getElementById('reviewForm').reset();
+    }
+  });
+</script>
