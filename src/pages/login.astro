@@ -1,0 +1,102 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title="Login" description="Login to The Dark Side" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>🔐 Login</h1>
+
+      <div id="loginForm">
+        <h2>Sign In</h2>
+        <input type="email" id="email" placeholder="Your email" />
+        <input type="password" id="password" placeholder="Your password" />
+        <button id="loginBtn">Login</button>
+        <p>Don't have an account? <a href="#" id="switchToSignup">Sign up</a></p>
+      </div>
+
+      <div id="signupForm" style="display:none">
+        <h2>Sign Up</h2>
+        <input type="email" id="signupEmail" placeholder="Your email" />
+        <input type="password" id="signupPassword" placeholder="Choose a password" />
+        <button id="signupBtn">Sign Up</button>
+        <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+      </div>
+
+      <p id="message"></p>
+    </main>
+    <Footer />
+
+    <script>
+      import { supabase } from '../supabase';
+
+      document.getElementById('switchToSignup').addEventListener('click', () => {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+      });
+
+      document.getElementById('switchToLogin').addEventListener('click', () => {
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+      });
+
+      document.getElementById('loginBtn').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          document.getElementById('message').textContent = '❌ ' + error.message;
+        } else {
+          document.getElementById('message').textContent = '✅ Logged in!';
+          window.location.href = '/submit';
+        }
+      });
+
+      document.getElementById('signupBtn').addEventListener('click', async () => {
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          document.getElementById('message').textContent = '❌ ' + error.message;
+        } else {
+          document.getElementById('message').textContent = '✅ Check your email to confirm your account!';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  input {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background: #0d1426;
+    border: 1px solid #4a9eff;
+    border-radius: 6px;
+    color: #e8eaf6;
+    font-size: 1rem;
+  }
+  button {
+    background: #4a9eff;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  button:hover {
+    background: #1a6fcc;
+  }
+</style>
