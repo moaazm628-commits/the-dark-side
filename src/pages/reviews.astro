@@ -1,0 +1,50 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { supabase } from '../supabase';
+
+const { data: reviews } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title="Community Reviews" description="Reviews submitted by our community" />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>🌍 Community Reviews</h1>
+      <p>Reviews submitted by our readers!</p>
+
+      {reviews && reviews.length === 0 && <p>No reviews yet. Be the first!</p>}
+
+      {reviews && reviews.map((review) => (
+        <div class="review-card">
+          <h2>{review.title}</h2>
+          <p class="meta">
+            {review.category === 'movie' ? '🎥' : review.category === 'show' ? '📺' : '⚽'}
+            {review.category} · ⭐ {review.rating}/10 · by {review.author}
+          </p>
+          <p>{review.content}</p>
+        </div>
+      ))}
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .review-card {
+    background: #0d1426;
+    border: 1px solid #4a9eff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .meta {
+    color: #4a9eff;
+    font-size: 0.9rem;
+  }
+</style>
